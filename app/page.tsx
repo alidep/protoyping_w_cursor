@@ -28,6 +28,21 @@ export default function Home() {
       description: 'Reusable components that you can use in your prototypes',
       path: '/prototypes/design-library'
     },
+    {
+      title: 'Digital Piano',
+      description: 'A monochromatic pink Mac OS-style synthesizer',
+      path: '/prototypes/digital-piano'
+    },
+    {
+      title: 'Typography Experiments',
+      description: 'Interactive CSS typography effects with 3D, wavy, circular, and variable fonts',
+      path: '/prototypes/typography-experiments'
+    },
+    {
+      title: 'Noted OS',
+      description: 'A classic OS-style note-taking app with rich text editing and drawing capabilities',
+      path: '/prototypes/noted-os'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',
