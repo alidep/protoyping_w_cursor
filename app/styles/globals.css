@@ -4,12 +4,30 @@
   box-sizing: border-box;
 }
 
+/* Glassmorphic Mac OS Variables */
+:root {
+  --glass-bg: #f0f4ff;
+  --glass-window: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: rgba(31, 38, 135, 0.15);
+  --glass-text: #2d2d2d;
+  --glass-title-bar: rgba(139, 92, 246, 0.5);
+  --glass-title-text: #ffffff;
+  --accent-yellow: rgba(255, 198, 0, 0.7);
+  --accent-purple: rgba(139, 92, 246, 0.3);
+}
+
 /* 2. Remove default margin */
 * {
   margin: 0;
 }
 
 body {
+  background: var(--glass-bg);
+  background-image: 
+    radial-gradient(circle at 20% 30%, var(--accent-yellow) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, var(--accent-purple) 0%, transparent 40%);
+  min-height: 100vh;
   /* 3. Add accessible line-height */
   line-height: 1.5;
   /* 4. Improve text rendering */
