@@ -1,0 +1,115 @@
+.drawingContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  font-family: "Comic Sans MS", cursive;
+  border-radius: 8px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  background: linear-gradient(to right, #ffd1dc, #ffb6c1);
+  border-bottom: 2px solid #ff69b4;
+  align-items: center;
+  border-radius: 6px;
+  margin: 4px;
+}
+
+.toolButton {
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #ff69b4;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toolButton:hover {
+  transform: scale(1.1);
+  background: #ffffff;
+  box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+}
+
+.toolButton:active,
+.toolButton.active {
+  transform: scale(0.95);
+  background: #ffd1dc;
+  box-shadow: 0 1px 2px rgba(255, 105, 180, 0.3);
+}
+
+.separator {
+  width: 2px;
+  height: 24px;
+  background: linear-gradient(to bottom, #ff69b4, #ffb6c1);
+  margin: 0 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+}
+
+.colorPicker {
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  border: 2px solid #ff69b4;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.colorPicker:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+}
+
+.lineWidth {
+  width: 120px;
+  height: 24px;
+  margin: 0 4px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #ff69b4;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.lineWidth:hover {
+  transform: scale(1.05);
+}
+
+.lineWidth::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #ff69b4;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lineWidth::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+}
+
+.canvas {
+  flex: 1;
+  background: #ffffff;
+  cursor: crosshair;
+  touch-action: none;
+  border: 2px solid #ff69b4;
+  border-radius: 8px;
+  margin: 4px;
+  box-shadow: inset 0 0 10px rgba(255, 182, 193, 0.3);
+} 

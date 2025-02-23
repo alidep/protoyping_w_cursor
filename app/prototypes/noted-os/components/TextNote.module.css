@@ -1,0 +1,138 @@
+.textNoteContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  font-family: "Comic Sans MS", cursive;
+  border-radius: 8px;
+  position: relative;
+}
+
+.toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  background: linear-gradient(to right, #ffd1dc, #ffb6c1);
+  border-bottom: 2px solid #ff69b4;
+  align-items: center;
+  border-radius: 6px;
+  margin: 4px;
+}
+
+.toolbar button {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #ff69b4;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #ff69b4;
+  min-width: 24px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.toolbar button:hover {
+  transform: scale(1.1);
+  background: #ffffff;
+  box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+}
+
+.toolbar button:active {
+  transform: scale(0.95);
+  background: #ffd1dc;
+  box-shadow: 0 1px 2px rgba(255, 105, 180, 0.3);
+}
+
+.separator {
+  width: 2px;
+  height: 24px;
+  background: linear-gradient(to bottom, #ff69b4, #ffb6c1);
+  margin: 0 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+}
+
+.formatSelect {
+  padding: 4px 8px;
+  border: 2px solid #ff69b4;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  color: #ff69b4;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  transition: all 0.2s ease;
+}
+
+.formatSelect:hover {
+  transform: scale(1.05);
+  background: #ffffff;
+  box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+}
+
+.editor {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.6;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  margin: 4px;
+}
+
+.editor:focus {
+  outline: none;
+}
+
+.stickerButton {
+  background: linear-gradient(45deg, #ff69b4, #ffb6c1) !important;
+  color: white !important;
+  padding: 4px 12px !important;
+  font-size: 14px !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  animation: sparkle 1.5s infinite;
+}
+
+@keyframes sparkle {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Rich text content styles */
+.editor h1 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #ff69b4;
+}
+
+.editor h2 {
+  font-size: 20px;
+  margin-bottom: 14px;
+  color: #ff69b4;
+}
+
+.editor h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #ff69b4;
+}
+
+.editor p {
+  margin-bottom: 12px;
+}
+
+.editor ul, .editor ol {
+  margin-left: 24px;
+  margin-bottom: 12px;
+}
+
+.editor li {
+  margin-bottom: 4px;
+} 
