@@ -122,7 +122,10 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
       lastPoint.current = currentPoint;
     } else {
       // For shape tools, draw on temporary canvas for preview
-      const tempContext = tempCanvasRef.current?.getContext('2d');
+      const tempCanvas = tempCanvasRef.current;
+      if (!tempCanvas) return;
+
+      const tempContext = tempCanvas.getContext('2d');
       if (!tempContext) return;
 
       // Clear temp canvas and copy main canvas content
@@ -152,9 +155,7 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
 
       // Copy temp canvas to main canvas
       context.clearRect(0, 0, canvas.width, canvas.height);
-      if (tempCanvasRef.current) {
-        context.drawImage(tempCanvasRef.current, 0, 0);
-      }
+      context.drawImage(tempCanvas, 0, 0);
     }
   };
 

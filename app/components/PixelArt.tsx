@@ -216,6 +216,93 @@ const PixelArt: React.FC<PixelArtProps> = ({ type, size = 32, scale = 4, classNa
       }
     };
 
+    const drawStar = () => {
+      const starColor = '#FFD700';  // Gold
+      const glowColor = '#FFFFE0';  // Light yellow
+
+      // Draw the star points
+      const points = [
+        [16, 8],  // Top
+        [20, 14], // Upper right
+        [24, 14], // Far right
+        [21, 18], // Lower right
+        [22, 24], // Bottom right
+        [16, 20], // Bottom center
+        [10, 24], // Bottom left
+        [11, 18], // Lower left
+        [8, 14],  // Far left
+        [12, 14]  // Upper left
+      ];
+
+      // Draw the star shape
+      for (let i = 0; i < points.length; i++) {
+        const [x1, y1] = points[i];
+        const [x2, y2] = points[(i + 1) % points.length];
+        
+        // Draw lines between points
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const steps = Math.max(Math.abs(dx), Math.abs(dy));
+        
+        for (let j = 0; j <= steps; j++) {
+          const x = Math.round(x1 + (dx * j) / steps);
+          const y = Math.round(y1 + (dy * j) / steps);
+          drawPixel(x, y, starColor);
+        }
+      }
+
+      // Add some glow effects
+      const glowPoints = [
+        [16, 9], [16, 7],  // Top
+        [19, 14], [21, 14], // Right
+        [16, 19], [16, 21], // Bottom
+        [13, 14], [11, 14]  // Left
+      ];
+
+      glowPoints.forEach(([x, y]) => {
+        drawPixel(x, y, glowColor);
+      });
+    };
+
+    const drawHeart = () => {
+      const heartColor = '#FF69B4';  // Hot pink
+      const shadowColor = '#FF1493'; // Deep pink
+
+      // Draw the main heart shape
+      const heartShape = (x: number, y: number, size: number) => {
+        for (let i = 0; i <= size; i++) {
+          for (let j = 0; j <= size; j++) {
+            const dx = i - size/2;
+            const dy = j - size/2;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < size/2) {
+              // Create heart shape using mathematical formula
+              const heartX = x + i;
+              const heartY = y + j;
+              
+              if ((Math.pow((heartX-16), 2) + Math.pow((heartY-16), 2) - 100) < 0) {
+                drawPixel(heartX, heartY, heartColor);
+              }
+            }
+          }
+        }
+      };
+
+      // Draw main heart
+      heartShape(8, 8, 16);
+
+      // Add some shading/highlights
+      const highlights = [
+        [14, 12], [15, 11], [16, 11],
+        [17, 12], [18, 13], [19, 14]
+      ];
+
+      highlights.forEach(([x, y]) => {
+        drawPixel(x, y, shadowColor);
+      });
+    };
+
     // Draw based on type
     switch (type.toLowerCase()) {
       case 'house':
@@ -235,6 +322,12 @@ const PixelArt: React.FC<PixelArtProps> = ({ type, size = 32, scale = 4, classNa
         break;
       case 'dog':
         drawDog();
+        break;
+      case 'star':
+        drawStar();
+        break;
+      case 'heart':
+        drawHeart();
         break;
     }
   }, [type, size, scale]);

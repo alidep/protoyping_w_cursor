@@ -7,15 +7,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #1a1a1a;
+  background: black;
   color: white;
   perspective: 1000px;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-family: 'Abril Fatface', cursive;
+}
+
+.description {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  max-width: 800px;
 }
 
 .input {
   font-size: 1.2rem;
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
+  padding: 0.8rem 1.5rem;
+  margin-bottom: 1.5rem;
   border: 2px solid #333;
   border-radius: 8px;
   background: #222;
@@ -29,7 +43,7 @@
   flex-direction: column;
   width: 100%;
   align-items: center;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .wordContainer {
@@ -39,13 +53,14 @@
   align-items: flex-start;
   gap: 2rem;
   max-width: 1200px;
+  padding: 1rem;
 }
 
 .wordGroup {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .pixelArtContainer {
@@ -54,53 +69,40 @@
   animation: float 3s ease-in-out infinite;
 }
 
+.word {
+  font-size: 3.5rem;
+  display: inline-block;
+  transition: all 0.3s ease;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 0.5rem;
+}
+
 /* Typography Effects */
 .effectBounce {
-  font-size: 3.5rem;
-  font-family: 'Abril Fatface', serif;
-  color: #ff6b6b;
   animation: bounce 2s infinite;
   transform-origin: center bottom;
 }
 
 .effectSpin {
-  font-size: 3.5rem;
-  font-family: 'Press Start 2P', cursive;
-  color: #4ecdc4;
   animation: spin 3s infinite;
   display: inline-block;
 }
 
 .effectShake {
-  font-size: 3.5rem;
-  font-family: 'Permanent Marker', cursive;
-  color: #ffd93d;
   animation: shake 0.5s infinite;
   display: inline-block;
 }
 
 .effectPulse {
-  font-size: 3.5rem;
-  font-family: 'Roboto Flex', sans-serif;
-  color: #6c5ce7;
   animation: pulse 2s infinite;
   text-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
 }
 
 .effectSlide {
-  font-size: 3.5rem;
-  font-weight: bold;
-  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
   animation: slide 2s infinite;
 }
 
 .effectFlip {
-  font-size: 3.5rem;
-  font-family: 'Press Start 2P', cursive;
-  color: #0fa;
   animation: flip 2s infinite;
   transform-style: preserve-3d;
 }
@@ -128,9 +130,9 @@
 }
 
 @keyframes slide {
-  0% { transform: translateX(-100%); opacity: 0; }
+  0% { transform: translateX(-50px); opacity: 0; }
   50% { transform: translateX(0); opacity: 1; }
-  100% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(50px); opacity: 0; }
 }
 
 @keyframes flip {
@@ -159,7 +161,7 @@
 
 /* Pixel Art Animations */
 .pixelBird {
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA0klEQVR42mNgGPKAkYGBgYmBgeE/uZiJgYHhPymYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8ArQZsIRsTlEQAAAAASUVORK5CYII=');
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA0klEQVR42mNgGPKAkYGBgYmBgeE/uZiJgYHhPymYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8xmImBgeE/MZiJgYHhPzGYiYGB4T8ArQZsIRsTlEQAAAAASUVORK5CYII=');
   animation: fly 2s ease-in-out infinite;
 }
 
