@@ -152,7 +152,9 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
 
       // Copy temp canvas to main canvas
       context.clearRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(tempCanvasRef.current, 0, 0);
+      if (tempCanvasRef.current) {
+        context.drawImage(tempCanvasRef.current, 0, 0);
+      }
     }
   };
 
