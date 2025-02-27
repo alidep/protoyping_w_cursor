@@ -1,20 +1,52 @@
 'use client';
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import styles from './styles/home.module.css';
 
-interface OrbPosition {
+interface Position {
   x: number;
   y: number;
 }
 
+interface WindowState {
+  position: Position;
+  isDragging: boolean;
+  dragStart: Position;
+}
+
 export default function Home() {
-  // State for tracking each orb's position and active drag state
-  const [orbPositions, setOrbPositions] = useState<OrbPosition[]>(Array(5).fill({ x: 0, y: 0 }));
-  const [activeOrb, setActiveOrb] = useState<number | null>(null);
-  const dragStart = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const orbStart = useRef<OrbPosition>({ x: 0, y: 0 });
+  const [browserWindow, setBrowserWindow] = useState<WindowState>({
+    position: { x: 40, y: 40 },
+    isDragging: false,
+    dragStart: { x: 0, y: 0 }
+  });
+
+  const [aimWindow, setAimWindow] = useState<WindowState>({
+    position: { x: 40, y: 40 },
+    isDragging: false,
+    dragStart: { x: 0, y: 0 }
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBrowserWindow(prev => ({
+        ...prev,
+        position: {
+          x: window.innerWidth - 840,
+          y: window.innerHeight - 640
+        }
+      }));
+
+      setAimWindow(prev => ({
+        ...prev,
+        position: {
+          x: (window.innerWidth - 550) / 2,
+          y: (window.innerHeight - 400) / 2
+        }
+      }));
+    }
+  }, []);
 
   // Add your prototypes to this array
   const prototypes = [
@@ -51,31 +83,47 @@ export default function Home() {
     // },
   ];
 
-  const handleOrbMouseDown = (e: React.MouseEvent, index: number) => {
-    e.stopPropagation();
-    setActiveOrb(index);
-    dragStart.current = { x: e.clientX, y: e.clientY };
-    orbStart.current = orbPositions[index];
+  const handleMouseDown = (e: React.MouseEvent, window: 'browser' | 'aim') => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'BUTTON') return;
+    
+    const state = window === 'browser' ? browserWindow : aimWindow;
+    const setState = window === 'browser' ? setBrowserWindow : setAimWindow;
+    
+    setState({
+      ...state,
+      isDragging: true,
+      dragStart: {
+        x: e.clientX - state.position.x,
+        y: e.clientY - state.position.y
+      }
+    });
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (activeOrb === null) return;
-    
-    const dx = e.clientX - dragStart.current.x;
-    const dy = e.clientY - dragStart.current.y;
-    
-    setOrbPositions(prev => prev.map((pos, idx) => 
-      idx === activeOrb 
-        ? { 
-            x: orbStart.current.x + dx,
-            y: orbStart.current.y + dy
-          }
-        : pos
-    ));
+    if (browserWindow.isDragging) {
+      setBrowserWindow({
+        ...browserWindow,
+        position: {
+          x: e.clientX - browserWindow.dragStart.x,
+          y: e.clientY - browserWindow.dragStart.y
+        }
+      });
+    }
+    if (aimWindow.isDragging) {
+      setAimWindow({
+        ...aimWindow,
+        position: {
+          x: e.clientX - aimWindow.dragStart.x,
+          y: e.clientY - aimWindow.dragStart.y
+        }
+      });
+    }
   };
 
   const handleMouseUp = () => {
-    setActiveOrb(null);
+    setBrowserWindow({ ...browserWindow, isDragging: false });
+    setAimWindow({ ...aimWindow, isDragging: false });
   };
 
   return (
@@ -83,52 +131,126 @@ export default function Home() {
          onMouseMove={handleMouseMove}
          onMouseUp={handleMouseUp}
          onMouseLeave={handleMouseUp}>
-      {[...Array(5)].map((_, i) => (
-        <div
-          key={i}
-          className={`${styles.floatingOrb} ${styles[`orb${i + 1}`]}`}
-          style={{
-            transform: `translate(${orbPositions[i].x}px, ${orbPositions[i].y}px)`,
-            cursor: activeOrb === i ? 'grabbing' : 'grab',
-            pointerEvents: 'auto'
-          }}
-          onMouseDown={(e) => handleOrbMouseDown(e, i)}
-        ></div>
-      ))}
-
-      {/* Add iridescent shell elements */}
-      <div className={styles.shell1}></div>
-      <div className={styles.shell2}></div>
-      <div className={styles.shell3}></div>
-
-      <div role="banner" className={styles.header}>
-        <div className={styles.windowControls}>
-          <span className={styles.closeButton}></span>
-          <span className={styles.minimizeButton}></span>
-          <span className={styles.zoomButton}></span>
+      <div className={styles.browserFrame}
+           style={{
+             left: browserWindow.position.x,
+             top: browserWindow.position.y,
+             bottom: 'auto',
+             right: 'auto'
+           }}>
+        <div className={styles.browserToolbar}
+             onMouseDown={(e) => handleMouseDown(e, 'browser')}>
+          <div className={styles.browserButtons}>
+            <button className={styles.browserButton}>←</button>
+            <button className={styles.browserButton}>→</button>
+            <button className={styles.browserButton}>⟳</button>
+            <button className={styles.browserButton}>⌂</button>
+          </div>
         </div>
-        <h1>Welcome to Ali's Prototypes</h1>
+        <div className={styles.browserAddressBar}>
+          <span>Location:</span>
+          <div className={styles.browserLocation}>http://www.geocities.com/dancinghamsters/</div>
+        </div>
+        <div className={styles.browserContent}>
+          <div className={styles.geocitiesBackground}>
+            <div className={styles.geocitiesContent}>
+              <div style={{ fontSize: '24px', marginBottom: '10px' }}>
+                ✨ Welcome to Dancing Hamsters Paradise! ✨
+              </div>
+              <div style={{ fontSize: '20px', marginBottom: '10px' }}>
+                💃 🐹 Dance Dance Hamster Revolution 🐹 💃
+              </div>
+              <div style={{ fontSize: '18px', marginBottom: '10px' }}>
+                Watch these adorable hamsters groove to the beat!
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                <img 
+                  src="/dancing-hamster.gif" 
+                  alt="Dancing Hamster" 
+                  style={{ width: '80%', maxWidth: '500px', marginTop: '10px', marginBottom: '10px' }}
+                />
+              </div>
+              <div style={{ fontSize: '16px', marginBottom: '10px' }}>
+                🚧 More hamsters coming soon! 🚧
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                <img 
+                  src="/construction.gif" 
+                  alt="Under Construction" 
+                  style={{ width: '100px', height: '100px', marginTop: '10px' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <main className={styles.mainContent}>
-        <section className={styles.grid}>
-          {/* Goes through the prototypes list (array) to create cards */}
-          {prototypes.map((prototype, index) => (
-            <Link 
-              key={index}
-              href={prototype.path} 
-              className={styles.card}
-            >
-              <h3>📁 {prototype.title}</h3>
-              <p>{prototype.description}</p>
-            </Link>
-          ))}
-        </section>
-      </main>
+      <div className={styles.window}
+           style={{
+             left: aimWindow.position.x,
+             top: aimWindow.position.y,
+             width: '550px',
+             height: '400px'
+           }}>
+        <div className={styles.titleBar}
+             onMouseDown={(e) => handleMouseDown(e, 'aim')}>
+          <div className={styles.windowTitle}>
+            <img src="/AIM.png" alt="AIM" className={styles.titleIcon} style={{ width: '35px', height: '35px' }} />
+            Ali's Prototypes Online (1.0)
+          </div>
+          <div className={styles.windowControls}>
+            <button className={styles.minimizeButton}>_</button>
+            <button className={styles.maximizeButton}>□</button>
+            <button className={styles.closeButton}>×</button>
+          </div>
+        </div>
 
-      <footer className={styles.footer}>
-        <p>© {new Date().getFullYear()} • Made with Classic Mac OS style</p>
-      </footer>
+        <div className={styles.toolbar}>
+          <button className={styles.toolbarButton}>File</button>
+          <button className={styles.toolbarButton}>Edit</button>
+          <button className={styles.toolbarButton}>View</button>
+          <button className={styles.toolbarButton}>Help</button>
+        </div>
+
+        <main className={styles.mainContent}>
+          <div className={styles.buddyList}>
+            <div className={styles.buddyListHeader}>
+              My Prototypes (5/5 online)
+            </div>
+            <div className={styles.grid}>
+              {prototypes.map((prototype, index) => (
+                <Link 
+                  key={index}
+                  href={prototype.path} 
+                  className={styles.buddyItem}
+                >
+                  <span className={styles.onlineIcon}>●</span>
+                  <span className={styles.buddyName}>
+                    {prototype.title === 'Typography Experiments' ? (
+                      <>
+                        Typography
+                        <br />
+                        Experiments
+                      </>
+                    ) : prototype.title}
+                  </span>
+                  <span className={styles.awayMessage}>{prototype.description}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <div className={styles.taskbar}>
+        <button className={styles.startButton}>
+          <span className={styles.startIcon}>🪟</span>
+          Start
+        </button>
+        <div className={styles.taskbarTime}>
+          {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </div>
+      </div>
     </div>
   );
 }
