@@ -23,12 +23,15 @@ const BASE_FREQUENCIES: { [key: string]: number } = {
   'A#': 466.16, 'B': 493.88
 };
 
-// Intervals for different chord types (in semitones)
-const CHORD_INTERVALS: { [key in ChordType]: number[] } = {
-  major: [0, 4, 7], // Root, Major Third, Perfect Fifth
-  minor: [0, 3, 7], // Root, Minor Third, Perfect Fifth
-  diminished: [0, 3, 6], // Root, Minor Third, Diminished Fifth
-  sus: [0, 5, 7], // Root, Perfect Fourth, Perfect Fifth
+// Chromatic scale for mapping note positions
+const CHROMATIC_SCALE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+// Scale intervals for different types (in semitones)
+const SCALE_INTERVALS: { [key in ChordType]: number[] } = {
+  major: [0, 2, 4, 5, 7, 9, 11], // Major scale: whole, whole, half, whole, whole, whole, half
+  minor: [0, 2, 3, 5, 7, 8, 10], // Natural minor scale: whole, half, whole, whole, half, whole, whole
+  diminished: [0, 2, 3, 5, 6, 8, 9, 11], // Diminished scale: whole, half, whole, half, whole, half, whole, half
+  sus: [0, 2, 5, 7, 9], // Pentatonic scale: whole, whole+half, whole, whole
 };
 
 export default function DigitalPiano() {
@@ -36,7 +39,7 @@ export default function DigitalPiano() {
   const [selectedKey, setSelectedKey] = useState<Note>('C');
   const [volume, setVolume] = useState(0.5);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [activeOscillators, setActiveOscillators] = useState<OscillatorNode[]>([]);
+  const [activeOscillator, setActiveOscillator] = useState<OscillatorNode | null>(null);
 
   useEffect(() => {
     const initAudio = () => {
@@ -57,51 +60,58 @@ export default function DigitalPiano() {
     };
   }, [audioContext]);
 
-  const stopChord = useCallback(() => {
-    activeOscillators.forEach(osc => {
-      osc.stop();
-      osc.disconnect();
-    });
-    setActiveOscillators([]);
-  }, [activeOscillators]);
+  const stopNote = useCallback(() => {
+    if (activeOscillator) {
+      activeOscillator.stop();
+      activeOscillator.disconnect();
+      setActiveOscillator(null);
+    }
+  }, [activeOscillator]);
 
-  const getNoteFrequency = (note: string, semitones: number): number => {
+  const getNoteFrequency = (note: string): number => {
+    const keyPosition = CHROMATIC_SCALE.indexOf(selectedKey);
+    const notePosition = CHROMATIC_SCALE.indexOf(note);
+    
+    let semitones = notePosition - keyPosition;
+    if (semitones < 0) semitones += 12;
+    
+    const scaleIntervals = SCALE_INTERVALS[selectedChordType];
     const baseFreq = BASE_FREQUENCIES[selectedKey];
-    const noteIndex = NOTES.indexOf(note as Note);
-    const keyIndex = NOTES.indexOf(selectedKey);
-    const interval = ((noteIndex - keyIndex + 7) % 7) * 2 - (note.includes('#') ? 1 : 0);
-    return baseFreq * Math.pow(2, (interval + semitones) / 12);
+    
+    // Calculate the chromatic frequency first
+    const chromaticFreq = baseFreq * Math.pow(2, semitones / 12);
+    
+    // If the note is in our scale, return its frequency
+    if (scaleIntervals.includes(semitones)) {
+      return chromaticFreq;
+    }
+    
+    // For non-scale notes, return the chromatic frequency
+    return chromaticFreq;
   };
 
-  const playChord = useCallback((rootNote: string) => {
+  const playNote = useCallback((note: string) => {
     if (!audioContext) return;
 
-    stopChord();
+    stopNote();
 
-    const intervals = CHORD_INTERVALS[selectedChordType];
-    const newOscillators: OscillatorNode[] = [];
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
-    intervals.forEach(interval => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(
+      getNoteFrequency(note),
+      audioContext.currentTime
+    );
 
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(
-        getNoteFrequency(rootNote, interval),
-        audioContext.currentTime
-      );
+    gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
 
-      gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.start();
-      newOscillators.push(oscillator);
-    });
-
-    setActiveOscillators(newOscillators);
-  }, [audioContext, volume, selectedChordType, selectedKey, stopChord]);
+    oscillator.start();
+    setActiveOscillator(oscillator);
+  }, [audioContext, volume, selectedKey, selectedChordType, stopNote]);
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(parseFloat(e.target.value));
@@ -165,9 +175,9 @@ export default function DigitalPiano() {
                 <div
                   key={note}
                   className={styles.key}
-                  onMouseDown={() => playChord(note)}
-                  onMouseUp={stopChord}
-                  onMouseLeave={stopChord}
+                  onMouseDown={() => playNote(note)}
+                  onMouseUp={stopNote}
+                  onMouseLeave={stopNote}
                 >
                   <span className={styles.noteLabel}>{note}</span>
                 </div>
@@ -179,9 +189,9 @@ export default function DigitalPiano() {
                   key={note}
                   className={styles.blackKey}
                   style={{ left: offset }}
-                  onMouseDown={() => playChord(note.replace('#', ''))}
-                  onMouseUp={stopChord}
-                  onMouseLeave={stopChord}
+                  onMouseDown={() => playNote(note)}
+                  onMouseUp={stopNote}
+                  onMouseLeave={stopNote}
                 >
                   <span className={styles.noteLabel}>{note}</span>
                 </div>
