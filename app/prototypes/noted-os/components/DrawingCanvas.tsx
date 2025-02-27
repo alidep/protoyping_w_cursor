@@ -25,12 +25,13 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
   const lastPoint = useRef<Point | null>(null);
   const startPoint = useRef<Point | null>(null);
   const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasSizeRef = useRef<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { alpha: true });
     if (!context) return;
 
     // Set canvas size to match container
@@ -38,15 +39,27 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
       const container = canvas.parentElement;
       if (!container) return;
       
-      canvas.width = container.clientWidth - 4; // Account for borders
-      canvas.height = container.clientHeight - 4;
+      // Only set size if it hasn't been initialized
+      if (!canvasSizeRef.current) {
+        const containerWidth = container.clientWidth - 4;
+        const containerHeight = container.clientHeight - 48; // Subtract toolbar height
+        
+        canvasSizeRef.current = {
+          width: containerWidth,
+          height: containerHeight
+        };
+      }
+
+      // Use stored size
+      canvas.width = canvasSizeRef.current.width;
+      canvas.height = canvasSizeRef.current.height;
       
       // Create temporary canvas for shape preview
       if (!tempCanvasRef.current) {
         tempCanvasRef.current = document.createElement('canvas');
+        tempCanvasRef.current.width = canvasSizeRef.current.width;
+        tempCanvasRef.current.height = canvasSizeRef.current.height;
       }
-      tempCanvasRef.current.width = canvas.width;
-      tempCanvasRef.current.height = canvas.height;
       
       // Restore content after resize
       if (content) {
@@ -85,7 +98,7 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
     startPoint.current = point;
 
     if (currentTool === 'pencil' || currentTool === 'brush' || currentTool === 'eraser') {
-      const context = canvas.getContext('2d');
+      const context = canvas.getContext('2d', { alpha: true });
       if (!context) return;
 
       context.beginPath();
@@ -102,7 +115,7 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
     if (!isDrawing || !lastPoint.current || !startPoint.current || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { alpha: true });
     if (!context) return;
 
     const rect = canvas.getBoundingClientRect();
@@ -125,7 +138,7 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
       const tempCanvas = tempCanvasRef.current;
       if (!tempCanvas) return;
 
-      const tempContext = tempCanvas.getContext('2d');
+      const tempContext = tempCanvas.getContext('2d', { alpha: true });
       if (!tempContext) return;
 
       // Clear temp canvas and copy main canvas content
@@ -164,7 +177,8 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
       setIsDrawing(false);
       lastPoint.current = null;
       startPoint.current = null;
-      onChange(canvasRef.current.toDataURL());
+      // Save at high resolution
+      onChange(canvasRef.current.toDataURL('image/png', 1.0));
     }
   };
 
@@ -172,17 +186,19 @@ export default function DrawingCanvas({ content, onChange, onCreateSticker }: Dr
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { alpha: true });
     if (!context) return;
 
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    onChange(canvas.toDataURL());
+    // Save at high resolution
+    onChange(canvas.toDataURL('image/png', 1.0));
   };
 
   const handleCreateSticker = () => {
     if (!canvasRef.current || !onCreateSticker) return;
-    onCreateSticker(canvasRef.current.toDataURL());
+    // Use the canvas directly without any transformation
+    onCreateSticker(canvasRef.current.toDataURL('image/png', 1.0));
   };
 
   return (

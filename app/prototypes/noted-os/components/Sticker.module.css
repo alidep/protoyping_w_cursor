@@ -1,45 +1,37 @@
 .sticker {
   position: absolute;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid #ff69b4;
-  border-radius: 12px;
+  background: #f5f5f5;
+  border: 1px solid #000000;
+  border-radius: 4px;
   padding: 4px;
-  box-shadow: 0 4px 15px rgba(255, 182, 193, 0.4),
-              inset 0 0 20px rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   user-select: none;
   z-index: 1000;
   transition: transform 0.1s ease;
 }
 
 .sticker:hover {
-  box-shadow: 0 8px 25px rgba(255, 182, 193, 0.6),
-              inset 0 0 30px rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .canvas {
   display: block;
-  image-rendering: pixelated;
-  border-radius: 8px;
-  background: linear-gradient(45deg, #ffd1dc 25%, transparent 25%),
-              linear-gradient(-45deg, #ffd1dc 25%, transparent 25%),
-              linear-gradient(45deg, transparent 75%, #ffd1dc 75%),
-              linear-gradient(-45deg, transparent 75%, #ffd1dc 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  border-radius: 2px;
+  background: white;
+  border: 1px solid #ddd;
 }
 
 .deleteButton {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 24px;
-  height: 24px;
-  background: #ff69b4;
-  border: 2px solid #ffffff;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  background: #f5f5f5;
+  border: 1px solid #000000;
   border-radius: 50%;
-  color: #ffffff;
-  font-size: 16px;
+  color: #000000;
+  font-size: 14px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -48,7 +40,7 @@
   opacity: 0;
   transform: scale(0.8);
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0;
 }
 
 .sticker:hover .deleteButton {
@@ -57,6 +49,7 @@
 }
 
 .deleteButton:hover {
-  background: #ff1493;
-  transform: scale(1.1);
+  background: #ff4444;
+  color: white;
+  border-color: #ff4444;
 } 

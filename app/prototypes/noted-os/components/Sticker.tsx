@@ -21,7 +21,7 @@ export default function Sticker({ text, initialPosition, onDelete, isImage = fal
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true, willReadFrequently: true });
     if (!ctx) return;
 
     if (isImage) {
@@ -39,27 +39,19 @@ export default function Sticker({ text, initialPosition, onDelete, isImage = fal
         const x = (canvas.width - img.width * scale) / 2;
         const y = (canvas.height - img.height * scale) / 2;
 
+        // Clear the canvas completely
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Fill with white background
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Enable high-quality image scaling
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Draw the image
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-
-        // Apply pixelation effect
-        const pixelSize = 2;
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        for (let y = 0; y < canvas.height; y += pixelSize) {
-          for (let x = 0; x < canvas.width; x += pixelSize) {
-            const i = (y * canvas.width + x) * 4;
-            const r = imageData.data[i];
-            const g = imageData.data[i + 1];
-            const b = imageData.data[i + 2];
-            const a = imageData.data[i + 3];
-
-            ctx.fillStyle = `rgba(${r},${g},${b},${a/255})`;
-            ctx.fillRect(x, y, pixelSize, pixelSize);
-          }
-        }
       };
       img.src = text; // text contains the image data URL
     } else {
@@ -67,9 +59,8 @@ export default function Sticker({ text, initialPosition, onDelete, isImage = fal
       canvas.width = 200;
       canvas.height = 100;
 
-      // Clear canvas
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Clear the canvas completely
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Set text properties
       ctx.font = '24px "Comic Sans MS"';
@@ -81,25 +72,9 @@ export default function Sticker({ text, initialPosition, onDelete, isImage = fal
       const y = canvas.height / 2;
 
       // Draw text
+      ctx.save();
       ctx.fillText(text, x, y);
-
-      // Pixelate effect
-      const pixelSize = 2;
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let y = 0; y < canvas.height; y += pixelSize) {
-        for (let x = 0; x < canvas.width; x += pixelSize) {
-          const i = (y * canvas.width + x) * 4;
-          const r = imageData.data[i];
-          const g = imageData.data[i + 1];
-          const b = imageData.data[i + 2];
-          const a = imageData.data[i + 3];
-
-          ctx.fillStyle = `rgba(${r},${g},${b},${a/255})`;
-          ctx.fillRect(x, y, pixelSize, pixelSize);
-        }
-      }
+      ctx.restore();
     }
   }, [text, isImage]);
 
