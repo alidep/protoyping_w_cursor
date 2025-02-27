@@ -9,119 +9,118 @@
 
 import Link from 'next/link';
 import styles from './styles.module.css';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const octaves = [3, 4, 5];
+type ChordType = 'major' | 'minor' | 'diminished' | 'sus';
+
+const NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'] as const;
+type Note = typeof NOTES[number];
+
+// Base frequencies for each note in the chromatic scale starting from C4
+const BASE_FREQUENCIES: { [key: string]: number } = {
+  'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13, 'E': 329.63,
+  'F': 349.23, 'F#': 369.99, 'G': 392.00, 'G#': 415.30, 'A': 440.00,
+  'A#': 466.16, 'B': 493.88
+};
+
+// Intervals for different chord types (in semitones)
+const CHORD_INTERVALS: { [key in ChordType]: number[] } = {
+  major: [0, 4, 7], // Root, Major Third, Perfect Fifth
+  minor: [0, 3, 7], // Root, Minor Third, Perfect Fifth
+  diminished: [0, 3, 6], // Root, Minor Third, Diminished Fifth
+  sus: [0, 5, 7], // Root, Perfect Fourth, Perfect Fifth
+};
 
 export default function DigitalPiano() {
-  const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [selectedChordType, setSelectedChordType] = useState<ChordType>('major');
+  const [selectedKey, setSelectedKey] = useState<Note>('C');
   const [volume, setVolume] = useState(0.5);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [oscillators, setOscillators] = useState<Record<string, OscillatorNode>>({});
-  const [bubbles, setBubbles] = useState<Array<{ id: number; freq: number; x: number; isActive: boolean }>>([]);
-  const bubbleIdRef = useRef(0);
+  const [activeOscillators, setActiveOscillators] = useState<OscillatorNode[]>([]);
 
   useEffect(() => {
-    setAudioContext(new (window.AudioContext || (window as any).webkitAudioContext)());
-  }, []);
-
-  // Create continuous bubbles
-  useEffect(() => {
-    const createBackgroundBubble = () => {
-      const size = Math.random() * 200 + 100; // Bubbles between 100px and 300px
-      const newBubble = {
-        id: bubbleIdRef.current++,
-        freq: 0,
-        x: Math.random() * window.innerWidth,
-        isActive: false,
-      };
-      setBubbles(prev => [...prev, newBubble]);
-      setTimeout(() => {
-        setBubbles(prev => prev.filter(b => b.id !== newBubble.id));
-      }, 8000); // Match animation duration
+    const initAudio = () => {
+      if (!audioContext) {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        setAudioContext(ctx);
+      }
+      document.removeEventListener('mousedown', initAudio);
+      document.removeEventListener('touchstart', initAudio);
     };
 
-    // Create initial bubbles
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => createBackgroundBubble(), i * 1000);
-    }
+    document.addEventListener('mousedown', initAudio);
+    document.addEventListener('touchstart', initAudio);
 
-    // Create new bubbles periodically
-    const interval = setInterval(createBackgroundBubble, 2000);
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      document.removeEventListener('mousedown', initAudio);
+      document.removeEventListener('touchstart', initAudio);
+    };
+  }, [audioContext]);
 
-  const activateBubbles = useCallback((note: string) => {
-    const freq = getNoteFrequency(note);
-    setBubbles(prev => 
-      prev.map(bubble => ({
-        ...bubble,
-        isActive: true,
-        freq: freq
-      }))
-    );
-    setTimeout(() => {
-      setBubbles(prev => 
-        prev.map(bubble => ({
-          ...bubble,
-          isActive: false
-        }))
-      );
-    }, 300);
-  }, []);
+  const stopChord = useCallback(() => {
+    activeOscillators.forEach(osc => {
+      osc.stop();
+      osc.disconnect();
+    });
+    setActiveOscillators([]);
+  }, [activeOscillators]);
 
-  const stopNote = useCallback((note: string) => {
-    const oscillator = oscillators[note];
-    if (oscillator) {
-      oscillator.stop();
-      oscillator.disconnect();
-      setOscillators(prev => {
-        const newOsc = { ...prev };
-        delete newOsc[note];
-        return newOsc;
-      });
-      setActiveKeys(prev => prev.filter(key => key !== note));
-    }
-  }, [oscillators]);
+  const getNoteFrequency = (note: string, semitones: number): number => {
+    const baseFreq = BASE_FREQUENCIES[selectedKey];
+    const noteIndex = NOTES.indexOf(note as Note);
+    const keyIndex = NOTES.indexOf(selectedKey);
+    const interval = ((noteIndex - keyIndex + 7) % 7) * 2 - (note.includes('#') ? 1 : 0);
+    return baseFreq * Math.pow(2, (interval + semitones) / 12);
+  };
 
-  const playNote = useCallback((note: string) => {
+  const playChord = useCallback((rootNote: string) => {
     if (!audioContext) return;
 
-    const freq = getNoteFrequency(note);
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    stopChord();
 
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-    
-    gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.start();
-    setOscillators(prev => ({ ...prev, [note]: oscillator }));
-    setActiveKeys(prev => [...prev, note]);
-    activateBubbles(note);
-  }, [audioContext, volume, activateBubbles]);
+    const intervals = CHORD_INTERVALS[selectedChordType];
+    const newOscillators: OscillatorNode[] = [];
 
-  const handleMouseDown = (note: string, event: React.MouseEvent) => {
-    playNote(note);
+    intervals.forEach(interval => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(
+        getNoteFrequency(rootNote, interval),
+        audioContext.currentTime
+      );
+
+      gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.start();
+      newOscillators.push(oscillator);
+    });
+
+    setActiveOscillators(newOscillators);
+  }, [audioContext, volume, selectedChordType, selectedKey, stopChord]);
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVolume(parseFloat(e.target.value));
   };
 
-  const handleMouseUp = (note: string) => {
-    stopNote(note);
+  const cycleKey = () => {
+    const currentIndex = NOTES.indexOf(selectedKey);
+    const nextIndex = (currentIndex + 1) % NOTES.length;
+    setSelectedKey(NOTES[nextIndex]);
   };
 
-  const handleVolumeChange = (e: React.MouseEvent<HTMLDivElement>, knob: HTMLDivElement) => {
-    const rect = knob.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-    const rotation = ((angle * 180) / Math.PI + 180) / 360;
-    setVolume(Math.max(0, Math.min(1, rotation)));
-  };
+  // Define black keys with their offsets (percentage of white key width)
+  const blackKeys = [
+    { note: 'C#', offset: '14.285%' },  // Between C and D
+    { note: 'D#', offset: '28.571%' },  // Between D and E
+    { note: 'F#', offset: '57.142%' },  // Between F and G
+    { note: 'G#', offset: '71.428%' },  // Between G and A
+    { note: 'A#', offset: '85.714%' }   // Between A and B
+  ];
 
   return (
     <div className={styles.container}>
@@ -134,78 +133,77 @@ export default function DigitalPiano() {
           </div>
           <span className={styles.titleText}>Digital Piano</span>
         </div>
-        
-        <div className={styles.controls}>
-          <div 
-            className={styles.knob} 
-            style={{ transform: `rotate(${volume * 270}deg)` }}
-            onMouseDown={(e) => {
-              const knob = e.currentTarget;
-              const handleMouseMove = (e: MouseEvent) => handleVolumeChange(e as any, knob);
-              document.addEventListener('mousemove', handleMouseMove);
-              document.addEventListener('mouseup', () => {
-                document.removeEventListener('mousemove', handleMouseMove);
-              }, { once: true });
-            }}
-          />
-        </div>
 
-        <div className={styles.piano}>
-          {bubbles.map(bubble => {
-            const size = Math.max(100, Math.min(300, bubble.freq ? (bubble.freq / 100) * 20 : 200));
-            const freqColor = bubble.freq ? (bubble.freq / 1000) * 360 : 0; // Convert frequency to hue rotation
-            return (
-              <div
-                key={bubble.id}
-                className={`${styles.bubble} ${bubble.isActive ? styles.active : ''}`}
-                style={{
-                  left: `${bubble.x}px`,
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  '--freq': freqColor,
-                } as React.CSSProperties}
-              />
-            );
-          })}
-          {octaves.map(octave => (
-            notes.map(note => {
-              const fullNote = `${note}${octave}`;
-              const isBlackKey = note.includes('#');
-              
-              return (
-                <div
-                  key={fullNote}
-                  className={`${styles.key} ${activeKeys.includes(fullNote) ? styles.active : ''}`}
-                  onMouseDown={(e) => handleMouseDown(fullNote, e)}
-                  onMouseUp={() => handleMouseUp(fullNote)}
-                  onMouseLeave={() => handleMouseUp(fullNote)}
+        <div className={styles.controls}>
+          <div className={styles.topControls}>
+            <div className={styles.chordTypeControls}>
+              {(['major', 'minor', 'diminished', 'sus'] as ChordType[]).map(type => (
+                <button
+                  key={type}
+                  className={`${styles.chordTypeButton} ${selectedChordType === type ? styles.selected : ''}`}
+                  onClick={() => setSelectedChordType(type)}
                 >
-                  {isBlackKey && (
-                    <div
-                      className={`${styles.blackKey} ${activeKeys.includes(fullNote) ? styles.active : ''}`}
-                    />
-                  )}
+                  {type}
+                </button>
+              ))}
+            </div>
+            <div className={styles.keySelector}>
+              <div className={styles.keySelectorDisplay}>
+                <div className={styles.displayScreen}>
+                  <span className={styles.displayText}>{selectedKey}</span>
                 </div>
-              );
-            })
-          ))}
+                <button onClick={cycleKey} className={styles.keySelectorButton}>
+                  Change Key
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.piano}>
+            <div className={styles.whiteKeys}>
+              {NOTES.map(note => (
+                <div
+                  key={note}
+                  className={styles.key}
+                  onMouseDown={() => playChord(note)}
+                  onMouseUp={stopChord}
+                  onMouseLeave={stopChord}
+                >
+                  <span className={styles.noteLabel}>{note}</span>
+                </div>
+              ))}
+            </div>
+            <div className={styles.blackKeys}>
+              {blackKeys.map(({ note, offset }) => (
+                <div
+                  key={note}
+                  className={styles.blackKey}
+                  style={{ left: offset }}
+                  onMouseDown={() => playChord(note.replace('#', ''))}
+                  onMouseUp={stopChord}
+                  onMouseLeave={stopChord}
+                >
+                  <span className={styles.noteLabel}>{note}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.volumeControl}>
+            <label>Volume:</label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={handleVolumeChange}
+              className={styles.volumeSlider}
+            />
+            <span className={styles.volumeValue}>{Math.round(volume * 100)}%</span>
+          </div>
         </div>
       </div>
     </div>
   );
-}
-
-// Helper function to calculate frequency for a given note
-function getNoteFrequency(note: string): number {
-  const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-  const octave = parseInt(note.slice(-1));
-  const noteIndex = notes.indexOf(note.slice(0, -1));
-  
-  // A4 is 440Hz
-  const a4 = 440;
-  const a4Index = notes.indexOf('A') + (4 * 12);
-  const noteAbsoluteIndex = noteIndex + (octave * 12);
-  const halfStepsFromA4 = noteAbsoluteIndex - a4Index;
-  
-  return a4 * Math.pow(2, halfStepsFromA4 / 12);
 } 

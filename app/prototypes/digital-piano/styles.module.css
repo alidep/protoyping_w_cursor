@@ -1,8 +1,11 @@
+/* Mario Kart 8-bit Theme */
 .container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 2rem auto;
-  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #2a2a2a;
+  padding: 2rem;
 }
 
 .section {
@@ -20,322 +23,279 @@
 }
 
 .pianoWindow {
-  background: #ffb6c1;
-  border-radius: 16px;
+  background: linear-gradient(145deg, #e6e6e6, #d4d4d4);
+  border-radius: 4px;
   box-shadow: 
-    0 8px 32px rgba(31, 38, 135, 0.15),
-    0 4px 12px rgba(255, 105, 180, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
   overflow: hidden;
-  padding: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  width: 100%;
+  max-width: 500px;
+  padding: 1.5rem;
 }
 
 .titleBar {
-  background: linear-gradient(90deg, #ff8cc6, #ff69b4);
-  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  padding: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
 }
 
 .windowControls {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
-.windowButton {
+.closeButton,
+.minimizeButton,
+.zoomButton {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 
-    inset 0 1px 2px rgba(255, 255, 255, 0.5),
-    0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .closeButton {
-  composes: windowButton;
-  background: linear-gradient(135deg, #ff8080, #ff6b6b);
+  background: #ff5f57;
 }
 
 .minimizeButton {
-  composes: windowButton;
-  background: linear-gradient(135deg, #ffe066, #ffd93d);
+  background: #febc2e;
 }
 
 .zoomButton {
-  composes: windowButton;
-  background: linear-gradient(135deg, #85ff85, #6bff6b);
+  background: #28c840;
 }
 
 .titleText {
+  font-family: monospace;
+  font-size: 1rem;
+  color: #ff4d00;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.topControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.chordTypeControls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chordTypeButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 2px;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  font-family: monospace;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chordTypeButton:hover {
+  background: #2a2a2a;
+}
+
+.chordTypeButton.selected {
+  background: #ff4d00;
+  color: #fff;
+}
+
+.keySelector {
+  display: flex;
+  align-items: center;
+}
+
+.keySelectorDisplay {
+  background: #1a1a1a;
+  padding: 1rem;
+  border-radius: 2px;
+  box-shadow: 
+    inset 0 1px 3px rgba(0,0,0,0.3),
+    0 1px 1px rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 120px;
+}
+
+.displayScreen {
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 2px;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.displayText {
+  color: #ff4d00;
+  font-family: "Courier New", monospace;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(255,77,0,0.6);
+}
+
+.keySelectorButton {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 2px;
+  background: #ff4d00;
   color: white;
   font-size: 0.9rem;
-  margin-left: 1rem;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+  font-family: monospace;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.keySelectorButton:hover {
+  background: #ff6a33;
+}
+
+.keySelectorButton:active {
+  background: #cc3d00;
 }
 
 .piano {
-  display: flex;
-  padding: 2rem;
-  gap: 6px;
-  background: #ffd1dc;
-  border-radius: 12px;
-  box-shadow: 
-    inset 0 2px 4px rgba(255, 255, 255, 0.3),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
-  min-height: 300px;
+  height: 200px;
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 500px;
+  background: #1a1a1a;
+  padding: 4px;
+  border-radius: 2px;
+}
+
+.whiteKeys {
+  display: flex;
+  height: 100%;
+  gap: 2px;
+  position: relative;
+  padding: 0 1px;
 }
 
 .key {
   flex: 1;
-  min-width: 65px;
-  height: 240px;
-  background: #ffffff;
-  border-radius: 12px;
-  cursor: pointer;
+  background: linear-gradient(to bottom, #fff 0%, #f0f0f0 100%);
+  border: 1px solid #ccc;
+  border-radius: 0 0 2px 2px;
+  margin: 0;
   position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 1rem;
+  cursor: pointer;
   transition: all 0.1s ease;
-  box-shadow: 
-    0 6px 0 #e6e6e6,
-    0 8px 10px rgba(0, 0, 0, 0.15);
+  z-index: 0;
 }
 
-.key:active,
-.key.active {
-  background: #ffe6ea;
-  transform: translateY(4px);
-  box-shadow: 
-    0 2px 0 #e6e6e6,
-    0 4px 6px rgba(0, 0, 0, 0.1);
+.key:active {
+  background: linear-gradient(to bottom, #f0f0f0 0%, #e9e9e9 100%);
+  transform: translateY(1px);
+}
+
+.blackKeys {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  pointer-events: none;
 }
 
 .blackKey {
   position: absolute;
-  width: 70%;
-  height: 140px;
-  background: linear-gradient(145deg, #ff8cc6, #ff69b4);
-  border-radius: 12px;
-  left: 60%;
-  z-index: 1;
+  width: 32px;
+  height: 100%;
+  background: linear-gradient(to bottom, #1a1a1a 0%, #000 100%);
+  border-radius: 0 0 2px 2px;
   cursor: pointer;
-  box-shadow: 
-    0 6px 0 #ff1493,
-    0 8px 10px rgba(0, 0, 0, 0.2);
-}
-
-.blackKey:active,
-.blackKey.active {
-  background: linear-gradient(145deg, #ff69b4, #ff8cc6);
-  transform: translateY(4px);
-  box-shadow: 
-    0 2px 0 #ff1493,
-    0 4px 6px rgba(0, 0, 0, 0.15);
-}
-
-.controls {
-  padding: 2rem;
   display: flex;
-  gap: 2rem;
-  align-items: center;
-  background: #ffd1dc;
-  border-radius: 12px;
-  margin: 8px 0;
-  box-shadow: 
-    inset 0 2px 4px rgba(255, 255, 255, 0.3),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  pointer-events: auto;
+  margin-left: -16px;
 }
 
-.knob {
-  width: 100px;
-  height: 100px;
-  background: #ffffff;
-  border: none;
-  border-radius: 50%;
-  position: relative;
-  cursor: pointer;
-  box-shadow: 
-    0 6px 0 #ff69b4,
-    0 8px 10px rgba(0, 0, 0, 0.15),
-    inset 0 2px 4px rgba(255, 255, 255, 0.5);
-}
-
-.knob::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 4px;
-  height: 45%;
-  background: #ff1493;
-  transform-origin: bottom;
-  transform: translateX(-50%);
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.knob::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 16px;
-  height: 16px;
-  background: #ff1493;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 
-    inset 0 2px 4px rgba(255, 255, 255, 0.3),
-    0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.visualizer {
-  position: relative;
-  width: 100%;
-  height: 160px;
-  background: #ffd1dc;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 
-    inset 0 2px 4px rgba(255, 255, 255, 0.3),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.waveformContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.3;
-}
-
-.waveform {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  animation: wave 2s infinite linear;
-}
-
-.bubble {
-  position: fixed;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 182, 193, 0.4),
-    rgba(255, 105, 180, 0.4),
-    rgba(255, 192, 203, 0.4)
-  );
-  border-radius: 50%;
-  pointer-events: none;
-  animation: float 8s ease-out infinite;
-  box-shadow: 
-    inset 0 2px 4px rgba(255, 255, 255, 0.8),
-    0 2px 4px rgba(255, 105, 180, 0.3);
-  z-index: -1;
-  backdrop-filter: blur(3px);
-  bottom: -200px;
-  transform: scale(1);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.bubble.active {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 182, 193, 0.8),
-    rgba(255, 20, 147, 0.8),
-    rgba(255, 105, 180, 0.8)
-  );
-  transform: scale(3.5);
-  filter: hue-rotate(calc(var(--freq) * 1deg));
-  z-index: 0;
-}
-
-.bubble::after {
-  content: '';
-  position: absolute;
-  top: 15%;
-  left: 15%;
-  width: 40%;
-  height: 40%;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(255, 255, 255, 0.4)
-  );
-  border-radius: 50%;
-  filter: blur(2px);
-}
-
-.bubble::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    45deg,
-    transparent 40%,
-    rgba(255, 255, 255, 0.4) 45%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0.4) 55%,
-    transparent 60%
-  );
-  border-radius: 50%;
-  animation: shimmer 3s infinite linear;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0) scale(1) rotate(0deg);
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.7;
-    transform: translateY(-60vh) scale(1.1) rotate(180deg);
-  }
-  100% {
-    transform: translateY(-120vh) scale(1.2) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.blackKey:active {
+  background: linear-gradient(to bottom, #000 0%, #1a1a1a 100%);
+  transform: translateY(1px);
 }
 
 .noteLabel {
-  position: absolute;
-  color: #ff1493;
   font-size: 0.8rem;
-  padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  box-shadow: 
-    0 2px 4px rgba(255, 105, 180, 0.2),
-    inset 0 1px 2px rgba(255, 255, 255, 0.5);
-  animation: fadeOut 1s ease-out forwards;
-  pointer-events: none;
+  font-family: monospace;
+  color: #666;
 }
 
-@keyframes fadeOut {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.8);
-  }
+.blackKey .noteLabel {
+  color: #999;
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+  font-family: monospace;
+  color: #1a1a1a;
+}
+
+.volumeSlider {
+  width: 150px;
+  height: 4px;
+  -webkit-appearance: none;
+  background: #1a1a1a;
+  border-radius: 2px;
+  outline: none;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #ff4d00;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.volumeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.volumeValue {
+  min-width: 3rem;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  font-family: monospace;
 }
 
 .songControls,
